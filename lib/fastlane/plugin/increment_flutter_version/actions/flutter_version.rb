@@ -9,7 +9,9 @@ module Fastlane
     # The top-level plugin interface
     class FlutterVersionAction < Action
       def self.run(params)
-        Helper::FlutterVersionHelper.get_flutter_version(params[:pubspec_location])
+        version_info = Helper::FlutterVersionHelper.get_flutter_version(params[:pubspec_location])
+        UI.message("Version info: #{version_info}")
+        return version_info
       end
 
       def self.description

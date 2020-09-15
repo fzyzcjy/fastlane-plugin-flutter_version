@@ -32,8 +32,6 @@ module Fastlane
         version_sections = version.split('+')
         version_name = version_sections[0]
         version_code = version_sections[1]
-        UI.message('The version name: '.dup.concat(version_name))
-        UI.message('The version code: '.dup.concat(version_code))
 
         return {
             'version_code' => version_code,
@@ -42,12 +40,17 @@ module Fastlane
       end
 
       def self.set_flutter_version(pubspec_location, flutter_version_name, flutter_version_code)
-        pubspec = YAML.load_file(pubspec_location)
+        old_version_info = get_flutter_version(pubspec_location)
 
-        new_version = "#{flutter_version_name}+#{flutter_version_code}"
-        pubspec["version"] = new_version
+        prefix = "version: "
+        old_version_str = "#{old_version_info["version_name"]}+#{old_version_info["version_code"]}"
+        new_version_str = "#{flutter_version_name}+#{flutter_version_code}"
 
-        File.write(pubspec_location, pubspec.to_yaml)
+        old_pubspec = File.read(pubspec_location)
+        new_pubspec = old_pubspec.sub "#{prefix}#{old_version_str}", "#{prefix}#{new_version_str}"
+        raise 'does not change anything - maybe the format of pubspec is wrong?' unless old_pubspec != new_pubspec
+       
+        File.write(pubspec_location, new_pubspec)
       end
 
       def self.get_pubspec_location_config

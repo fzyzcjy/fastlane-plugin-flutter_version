@@ -14,7 +14,7 @@ module Fastlane
         version_code_int = Integer(version_info['version_code'])
 
         # ref https://github.com/fastlane/fastlane/blob/master/fastlane/lib/fastlane/actions/increment_version_number.rb
-        version_name_array = current_version.split(".").map { |x| Integer(x) }
+        version_name_array = version_name.split(".").map { |x| Integer(x) }
         case params[:bump_type]
         when "build"
           # nothing here - do not change version_name, only change version_code
@@ -35,6 +35,8 @@ module Fastlane
 
         next_version_name = version_name_array.join(".")
         next_version_code = (version_code_int + 1).to_s
+
+        UI.message("Next version: #{next_version_name} #{next_version_code}")
 
         Helper::FlutterVersionHelper.set_flutter_version(pubspec_location, next_version_name, next_version_code)
       end
