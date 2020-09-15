@@ -9,29 +9,7 @@ module Fastlane
     # The top-level plugin interface
     class FlutterVersionAction < Action
       def self.run(params)
-        pubspec_location = params[:pubspec_location]
-        begin
-          pubspec = YAML.load_file(pubspec_location)
-        # rubocop:disable Style/RescueStandardError
-        rescue
-          raise 'Read pubspec.yaml failed'
-        end
-        # rubocop:enable Style/RescueStandardError
-        version = pubspec['version']
-        UI.message('The full version is: '.dup.concat(version))
-        unless version.include?('+')
-          raise 'Verson code indicator (+) not found in pubspec.yml'
-        end
-
-        version_sections = version.split('+')
-        version_name = version_sections[0]
-        version_code = version_sections[1]
-        UI.message('The version name: '.dup.concat(version_name))
-        UI.message('The version code: '.dup.concat(version_code))
-        {
-          'version_code' => version_code,
-          'version_name' => version_name
-        }
+        Helper::FlutterVersionHelper.get_flutter_version(params[:pubspec_location])
       end
 
       def self.description
@@ -44,8 +22,8 @@ module Fastlane
 
       def self.return_value
         [
-          ['VERSION_CODE', 'The version code'],
-          ['VERSION_NAME', 'The verison name']
+            ['VERSION_CODE', 'The version code'],
+            ['VERSION_NAME', 'The verison name']
         ]
       end
 
@@ -58,14 +36,7 @@ module Fastlane
 
       def self.available_options
         [
-          FastlaneCore::ConfigItem.new(
-            key: :pubspec_location,
-            env_name: 'PUBSPEC_LOCATION',
-            description: 'The location of pubspec.yml',
-            optional: true,
-            type: String,
-            default_value: '../pubspec.yaml'
-          )
+            Helper::FlutterVersionHelper.get_pubspec_location_config
         ]
       end
 
