@@ -39,6 +39,9 @@ module Fastlane
         UI.message("Next version: #{next_version_name} #{next_version_code}")
 
         Helper::FlutterVersionHelper.set_flutter_version(pubspec_location, next_version_name, next_version_code)
+
+        # return the updated version
+        return Helper::FlutterVersionHelper.get_flutter_version(pubspec_location)
       end
 
       def self.description
