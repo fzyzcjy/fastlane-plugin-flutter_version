@@ -6,7 +6,7 @@ require_relative '../helper/flutter_version_helper'
 
 module Fastlane
   module Actions
-    class IncrementFlutterVersionName < Action
+    class IncrementFlutterVersionAction < Action
       def self.run(params)
         pubspec_location = params[:pubspec_location]
         version_info = Helper::FlutterVersionHelper.get_flutter_version(pubspec_location)
@@ -16,6 +16,8 @@ module Fastlane
         # ref https://github.com/fastlane/fastlane/blob/master/fastlane/lib/fastlane/actions/increment_version_number.rb
         version_name_array = current_version.split(".").map { |x| Integer(x) }
         case params[:bump_type]
+        when "build"
+          # nothing here - do not change version_name, only change version_code
         when "bump"
           version_name_array[-1] = version_name_array[-1] + 1
         when "patch"
@@ -52,17 +54,8 @@ module Fastlane
             FastlaneCore::ConfigItem.new(
                 key: :bump_type,
                 env_name: "FL_FLUTTER_VERSION_NUMBER_BUMP_TYPE",
-                description: "The type of this version bump. Available: patch, minor, major",
+                description: "The type of this version bump. Available: build, bump, patch, minor, major",
                 default_value: "bump",
-                verify_block: proc do |value|
-                  UI.user_error!("Available values are 'patch', 'minor' and 'major'") unless ['bump', 'patch', 'minor', 'major'].include?(value)
-                end
-            ),
-            FastlaneCore::ConfigItem.new(
-                key: :version,
-                description: 'The version of Flutter',
-                optional: true,
-                type: String,
             ),
         ]
       end
